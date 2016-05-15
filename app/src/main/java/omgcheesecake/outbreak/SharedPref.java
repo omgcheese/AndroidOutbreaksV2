@@ -14,7 +14,7 @@ public class SharedPref extends MapModel{
         sharedPreferences = activity.getSharedPreferences("outbreakReportOption", Context.MODE_PRIVATE);
         if(this.option == null) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("option", "1 Year");
+            editor.putString("option", "3 Month");
             editor.apply();
         }
     }

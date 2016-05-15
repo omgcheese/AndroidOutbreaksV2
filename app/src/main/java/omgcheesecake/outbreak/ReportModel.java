@@ -23,20 +23,6 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
-
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
@@ -186,15 +172,6 @@ public class ReportModel extends DialogFragment {
                 }
             }
 
-            HashMap<String, String> hashMap = new HashMap<>();
-
-            if(!Character.isUpperCase(virusname.charAt(0))) {
-                hashMap.put("virusname", WordUtils.capitalize(virusname));
-            }
-            else {
-                hashMap.put("virusname", virusname);
-            }
-
             //Detect dash line first
             pattern = Pattern.compile("\\s\\W\\s\\w*");
             matcher = pattern.matcher(countryname);
@@ -206,14 +183,21 @@ public class ReportModel extends DialogFragment {
                 }
             }
 
-            pattern = Pattern.compile("");
-
-
-
-            hashMap.put("country", WordUtils.capitalize(countryname));
-            hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-
-            sortedArrayList.add(hashMap);
+            //Checks if string has AND
+            //Need to find a way to split and or ,
+            String newCountry[] = countryname.split("and");
+            for(int j = 0; j < newCountry.length; j++){
+                HashMap<String, String> hashMap = new HashMap<>();
+                if(!Character.isUpperCase(virusname.charAt(0))) {
+                    hashMap.put("virusname", WordUtils.capitalize(virusname));
+                }
+                else {
+                    hashMap.put("virusname", virusname);
+                }
+                hashMap.put("country", WordUtils.capitalize(newCountry[j]));
+                hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+                sortedArrayList.add(hashMap);
+            }
         }
 
         return sortedArrayList;

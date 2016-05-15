@@ -6,7 +6,6 @@ android {
 
     defaultConfig {
         applicationId "omgcheesecake.outbreak"
-        multiDexEnabled true
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
@@ -35,6 +34,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.android.support:design:23.1.1'
-    compile 'com.github.PhilJay:MPAndroidChart:v2.2.4'
     compile 'org.apache.commons:commons-lang3:3.4'
 }
