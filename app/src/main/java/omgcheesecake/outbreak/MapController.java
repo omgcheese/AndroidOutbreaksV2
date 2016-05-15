@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,13 +67,9 @@ public class MapController extends AppCompatActivity implements OnMapReadyCallba
 
         Drawable drawable = null;
         Bitmap icon = null;
-        try {
-            drawable = Drawable.createFromXml(activity.getResources(), activity.getResources().getXml(R.xml.outbreakmapmarkerv4));
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        drawable = ContextCompat.getDrawable(activity, R.drawable.outbreakmapmarkerv4);
+
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0,0,canvas.getWidth(),canvas.getHeight());
