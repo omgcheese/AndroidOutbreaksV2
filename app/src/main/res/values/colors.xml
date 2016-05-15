@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#8BC34A</color>
+    <color name="colorPrimaryDark">#689F38</color>
+    <color name="colorPrimaryLight">#DCEDC8</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorTintWhite">#cccccc</color>
+    <color name="TabButtonBack">#FFF</color>
+    <color name="TabSelected">#FF4081</color>
+    <color name="customRowBack">#FFF</color>
+    <color name="virusback">#f2f2f2</color>
+</resources>
