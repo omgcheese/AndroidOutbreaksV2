@@ -23,20 +23,6 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
-
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
@@ -138,10 +124,10 @@ public class ReportModel extends DialogFragment {
 
         }
         else if(radioButton.getText().equals("Most")){
-            recycleList = new RecycleList(getMostData("virusname"), "Most");
+            recycleList = new RecycleList(getMostData("virusname", getRecentData()), "Most");
         }
         else{
-            recycleList = new RecycleList(getMostData("country"), "Region");
+            recycleList = new RecycleList(getMostData("country", getRecentData()), "Region");
         }
 
         if(recyclerView == null){
@@ -152,6 +138,7 @@ public class ReportModel extends DialogFragment {
         recyclerView.setAdapter(recycleList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
+
 
     public ArrayList<HashMap<String, String>> getRecentData(){
         //INit Sqllite
@@ -186,41 +173,49 @@ public class ReportModel extends DialogFragment {
                 }
             }
 
-            HashMap<String, String> hashMap = new HashMap<>();
-
-            if(!Character.isUpperCase(virusname.charAt(0))) {
-                hashMap.put("virusname", WordUtils.capitalize(virusname));
-            }
-            else {
-                hashMap.put("virusname", virusname);
-            }
-
-            //Detect dash line first
-            pattern = Pattern.compile("\\s\\W\\s\\w*");
-            matcher = pattern.matcher(countryname);
-
-            while(matcher.find()){
-                if(matcher.group().length() != 0){
-                    String s = matcher.group().substring(3);
-                    countryname = s;
+            //Checks if string has AND or ,
+            if(countryname.equals("saint vincent and the grenadines")){
+                HashMap<String, String> hashMap = new HashMap<>();
+                if (!Character.isUpperCase(virusname.charAt(0))) {
+                    hashMap.put("virusname", WordUtils.capitalize(virusname));
+                } else {
+                    hashMap.put("virusname", virusname);
                 }
+                hashMap.put("country", WordUtils.capitalize(countryname));
+                hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+                sortedArrayList.add(hashMap);
             }
+            else if(countryname.equals("trinidad and tobago")){
+                HashMap<String, String> hashMap = new HashMap<>();
+                if (!Character.isUpperCase(virusname.charAt(0))) {
+                    hashMap.put("virusname", WordUtils.capitalize(virusname));
+                } else {
+                    hashMap.put("virusname", virusname);
+                }
+                hashMap.put("country", WordUtils.capitalize(countryname));
+                hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+                sortedArrayList.add(hashMap);
+            }
+            else{
+                String newCountry[] = countryname.split(" - | and |, ");
+                for (int j = 0; j < newCountry.length; j++) {
+                    HashMap<String, String> hashMap = new HashMap<>();
+                    if (!Character.isUpperCase(virusname.charAt(0))) {
+                        hashMap.put("virusname", WordUtils.capitalize(virusname));
+                    } else {
+                        hashMap.put("virusname", virusname);
+                    }
+                    hashMap.put("country", WordUtils.capitalize(newCountry[j]));
+                    hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+                    sortedArrayList.add(hashMap);
+                }
 
-            pattern = Pattern.compile("");
-
-
-
-            hashMap.put("country", WordUtils.capitalize(countryname));
-            hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-
-            sortedArrayList.add(hashMap);
+            }
         }
-
         return sortedArrayList;
-
     }
 
-    public ArrayList<HashMap<String, Integer>> getMostData(String s){
+    public ArrayList<HashMap<String, Integer>> getMostData(String s, ArrayList<HashMap<String, String>> inputList){
         //Count how many incident occurred by date
 
         //INit Sqllite
@@ -232,30 +227,27 @@ public class ReportModel extends DialogFragment {
             sharedPref = new SharedPref(getActivity());
         }
 
-        //Define sorting func
-        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-        arrayList = sqlLiteModel.virusByTime(sharedPref.getOption());
         ArrayList<HashMap<String, Integer>> sortedArrayList = new ArrayList<>();
 
         //Sorting mechanism
-        for(int i = arrayList.size()-1; i >= 0 ; i--){
-            String virusname = arrayList.get(i).get(s).toLowerCase().trim();
+        for(int i = inputList.size()-1; i >= 0 ; i--){
+            String virusname = inputList.get(i).get(s);
 
             if(sortedArrayList.size() == 0){
                 HashMap<String, Integer> hashMap = new HashMap<>();
-                hashMap.put(WordUtils.capitalize(virusname.toLowerCase().trim()), 1);
+                hashMap.put(WordUtils.capitalize(virusname), 1);
                 sortedArrayList.add(hashMap);
             }
             else{
                 int size = new Integer(sortedArrayList.size());
                 for(int j = 0; j < size; j++){
-                    if(sortedArrayList.get(j).containsKey(WordUtils.capitalize(virusname.toLowerCase().trim())) || sortedArrayList.get(j).equals(WordUtils.capitalize(virusname.toLowerCase().trim()))){
-                        sortedArrayList.get(j).put(WordUtils.capitalize(virusname.toLowerCase().trim()), sortedArrayList.get(j).get(WordUtils.capitalize(virusname.toLowerCase().trim()))+1);
+                    if(sortedArrayList.get(j).containsKey(virusname) || sortedArrayList.get(j).equals(virusname)){
+                        sortedArrayList.get(j).put(WordUtils.capitalize(virusname), sortedArrayList.get(j).get(virusname)+1);
                         break;
                     }
-                    if(j == size-1 && !sortedArrayList.get(j).containsKey(virusname.trim())){
+                    if(j == size-1 && !sortedArrayList.get(j).containsKey(virusname)){
                         HashMap<String, Integer> hashMap = new HashMap<>();
-                        hashMap.put(WordUtils.capitalize(virusname.toLowerCase().trim()), 1);
+                        hashMap.put(virusname, 1);
                         sortedArrayList.add(hashMap);
                         break;
                     }

@@ -109,12 +109,12 @@ public class MapController extends AppCompatActivity implements OnMapReadyCallba
         this.googleDataListener = googleDataListener;
     }
 
-    public void startReverse(ArrayList<HashMap<String, String>> arrayList){
+    public void startReverse(ArrayList<HashMap<String, Integer>> arrayList){
         ReverseGeoCoding RG = new ReverseGeoCoding(activity);
         RG.execute(arrayList);
     }
 
-    protected class ReverseGeoCoding extends AsyncTask<ArrayList<HashMap<String, String>>, Void, ArrayList<HashMap<String, LatLng>>> {
+    protected class ReverseGeoCoding extends AsyncTask<ArrayList<HashMap<String, Integer>>, Void, ArrayList<HashMap<String, LatLng>>> {
         private Context context;
 
         public ReverseGeoCoding(Context context){
@@ -122,7 +122,7 @@ public class MapController extends AppCompatActivity implements OnMapReadyCallba
         }
 
         @Override
-        protected ArrayList<HashMap<String, LatLng>> doInBackground(ArrayList<HashMap<String, String>>... params) {
+        protected ArrayList<HashMap<String, LatLng>> doInBackground(ArrayList<HashMap<String, Integer>>... params) {
 
             Geocoder geocoder = new Geocoder(this.context, Locale.getDefault());
             List<Address> address;
@@ -131,7 +131,7 @@ public class MapController extends AppCompatActivity implements OnMapReadyCallba
             ArrayList<HashMap<String, LatLng>> arrayListLatLng = new ArrayList<>(size);
 
             for(int i  = 0; i < size; i++ ){
-                String country = params[0].get(i).get("country");
+                String country = params[0].get(i).keySet().iterator().next();
                 try {
                     address = geocoder.getFromLocationName(country, 1);
                     if(address != null && address.size() > 0){

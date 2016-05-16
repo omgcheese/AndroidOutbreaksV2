@@ -32,6 +32,8 @@ public class RecycleList extends RecyclerView.Adapter<RecycleList.ViewHolder>{
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view;
+
+
         if(this.tabString.equals("Recent")){
             //custom layout
             view = inflater.inflate(R.layout.custom_row_recent, parent, false);
