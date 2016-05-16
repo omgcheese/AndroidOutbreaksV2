@@ -22,20 +22,27 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.apache.commons.lang3.text.WordUtils;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 //Main Model
 //This model should be shared with other models as starting
 //However other models should not all connected; Use implements
 
-public class MapModel extends AppCompatActivity{
+public class MapModel extends AppCompatActivity {
 
     private static TextView reportTitle;
-//    private ApiModel apiModel;
+    //    private ApiModel apiModel;
     private SqlLiteModel sqlLiteModel;
     private FragmentManager fm;
     private SharedPref sharedPref;
     private RecycleList recycleList;
     private MapController mapController;
-
 
 
     @Override
@@ -55,11 +62,11 @@ public class MapModel extends AppCompatActivity{
         //Init report Title
         OutbreakInit();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Window w = getWindow(); // in Activity's onCreate() for instance
-            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            Window w = getWindow(); // in Activity's onCreate() for instance
+//            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//            w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+//        }
 
     }
 
@@ -80,15 +87,15 @@ public class MapModel extends AppCompatActivity{
         });
     }
 
-    public void SQLInit(){
-        if (this.sqlLiteModel == null){
+    public void SQLInit() {
+        if (this.sqlLiteModel == null) {
             sqlLiteModel = new SqlLiteModel(this);
         }
         sqlLiteModel.initiateController();
     }
 
-    public void GoogleMapInit(){
-        if(mapController == null){
+    public void GoogleMapInit() {
+        if (mapController == null) {
             mapController = new MapController(this);
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
@@ -109,8 +116,8 @@ public class MapModel extends AppCompatActivity{
         });
     }
 
-    public void mapControllerReverse(){
-        this.mapController.startReverse(sqlLiteModel.virusByTime(sharedPref.getOption()));
+    public void mapControllerReverse() {
+        this.mapController.startReverse(getMostData("country", getRecentData()));
     }
 
     @Override
@@ -119,7 +126,128 @@ public class MapModel extends AppCompatActivity{
         sqlLiteModel.SQLDestroy();
     }
 
-    public void Buttonanimated(){
+    public void Buttonanimated() {
         reportTitle.setVisibility(View.VISIBLE);
+    }
+
+
+    public ArrayList<HashMap<String, String>> getRecentData() {
+        //Define sorting func
+        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+        arrayList = sqlLiteModel.virusByTime(sharedPref.getOption());
+        ArrayList<HashMap<String, String>> sortedArrayList = new ArrayList<>();
+
+        //Since sqlitemodel is sorted by time, just need to parse "And" change virus name to capital
+
+        for (int i = 0; i < arrayList.size(); i++) {
+            String virusname = arrayList.get(i).get("virusname").toLowerCase().trim();
+            String countryname = arrayList.get(i).get("country").toLowerCase().trim();
+            String lastupdated = arrayList.get(i).get("lastupdated");
+
+            //Check if there is bracket word in Virus section and capitalize all letters
+            Pattern pattern = Pattern.compile("\\(([^)]+)\\)");
+            Matcher matcher = pattern.matcher(virusname);
+
+            while (matcher.find()) {
+                if (matcher.group().length() != 0) {
+                    String s = matcher.group().trim().substring(1, matcher.group().trim().length() - 1).toUpperCase();
+                    virusname = s;
+                }
+            }
+
+            //Checks if string has AND or ,
+            if(countryname.equals("saint vincent and the grenadines")){
+                HashMap<String, String> hashMap = new HashMap<>();
+                if (!Character.isUpperCase(virusname.charAt(0))) {
+                    hashMap.put("virusname", WordUtils.capitalize(virusname));
+                } else {
+                    hashMap.put("virusname", virusname);
+                }
+                hashMap.put("country", WordUtils.capitalize(countryname));
+                hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+                sortedArrayList.add(hashMap);
+            }
+            else if(countryname.equals("trinidad and tobago")){
+                HashMap<String, String> hashMap = new HashMap<>();
+                if (!Character.isUpperCase(virusname.charAt(0))) {
+                    hashMap.put("virusname", WordUtils.capitalize(virusname));
+                } else {
+                    hashMap.put("virusname", virusname);
+                }
+                hashMap.put("country", WordUtils.capitalize(countryname));
+                hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+                sortedArrayList.add(hashMap);
+            }
+            else{
+                String newCountry[] = countryname.split(" - | and |, ");
+                for (int j = 0; j < newCountry.length; j++) {
+                    HashMap<String, String> hashMap = new HashMap<>();
+                    if (!Character.isUpperCase(virusname.charAt(0))) {
+                        hashMap.put("virusname", WordUtils.capitalize(virusname));
+                    } else {
+                        hashMap.put("virusname", virusname);
+                    }
+                    hashMap.put("country", WordUtils.capitalize(newCountry[j]));
+                    hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+                    sortedArrayList.add(hashMap);
+                }
+
+            }
+        }
+        return sortedArrayList;
+    }
+
+    public ArrayList<HashMap<String, Integer>> getMostData(String s, ArrayList<HashMap<String, String>> inputList){
+        //Count how many incident occurred by date
+        ArrayList<HashMap<String, Integer>> sortedArrayList = new ArrayList<>();
+
+        //Sorting mechanism
+        for(int i = inputList.size()-1; i >= 0 ; i--){
+            String virusname = inputList.get(i).get(s);
+
+            if(sortedArrayList.size() == 0){
+                HashMap<String, Integer> hashMap = new HashMap<>();
+                hashMap.put(WordUtils.capitalize(virusname), 1);
+                sortedArrayList.add(hashMap);
+            }
+            else{
+                int size = new Integer(sortedArrayList.size());
+                for(int j = 0; j < size; j++){
+                    if(sortedArrayList.get(j).containsKey(virusname) || sortedArrayList.get(j).equals(virusname)){
+                        sortedArrayList.get(j).put(WordUtils.capitalize(virusname), sortedArrayList.get(j).get(virusname)+1);
+                        break;
+                    }
+                    if(j == size-1 && !sortedArrayList.get(j).containsKey(virusname)){
+                        HashMap<String, Integer> hashMap = new HashMap<>();
+                        hashMap.put(virusname, 1);
+                        sortedArrayList.add(hashMap);
+                        break;
+                    }
+                }
+            }
+        }
+
+        //Sort sortedArrayList in order of virus occurance
+        //bubblesort
+        int checkOrder = 0;
+        while(checkOrder < sortedArrayList.size() - 1){
+            checkOrder = 0;
+            for(int i = 0; i < sortedArrayList.size(); i++){
+                if(i != sortedArrayList.size()-1){
+                    //if current index is bigger than latter index, Collections will swap the elements
+                    if(sortedArrayList.get(i).values().iterator().next() < sortedArrayList.get(i+1).values().iterator().next()){
+                        Collections.swap(sortedArrayList, i, i + 1);
+                    }
+                    //if two elements are in order it will increment checkOrder variable
+                    //once they are all in order, checkOrder should be sortedArray.size -1
+                    else {
+                        checkOrder++;
+                    }
+                }
+            }
+        }
+
+        return sortedArrayList;
+
     }
 }
