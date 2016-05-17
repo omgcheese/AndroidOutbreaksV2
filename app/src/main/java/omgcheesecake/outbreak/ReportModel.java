@@ -3,6 +3,7 @@ package omgcheesecake.outbreak;
 
 import android.app.Dialog;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +21,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -42,6 +45,7 @@ public class ReportModel extends DialogFragment {
     private RecycleList recycleList;
     private SqlLiteModel sqlLiteModel;
     private View view;
+    private MapController mapController;
 
     private RadioGroup radioGroup;
 
@@ -79,6 +83,8 @@ public class ReportModel extends DialogFragment {
         LoadDataToView(view);
 
 //        PieChart(view);
+
+        mapController = new MapController(getActivity());
 
         return view;
     }
@@ -306,26 +312,37 @@ public class ReportModel extends DialogFragment {
 
             case (R.id.action_1week):
                 sharedPref.setOption("1 Week");
+                mapController.clearMarkers();
+                mapController.startReverse(getMostData("country", getRecentData()));
                 break;
 
             case (R.id.action_1month):
                 sharedPref.setOption("1 Month");
+                mapController.clearMarkers();
+                mapController.startReverse(getMostData("country", getRecentData()));
                 break;
 
             case (R.id.action_3month):
                 sharedPref.setOption("3 Month");
+                mapController.clearMarkers();
+                mapController.startReverse(getMostData("country", getRecentData()));
                 break;
 
             case (R.id.action_6month):
                 sharedPref.setOption("6 Month");
+                mapController.clearMarkers();
+                mapController.startReverse(getMostData("country", getRecentData()));
                 break;
 
             case (R.id.action_1year):
                 sharedPref.setOption("1 Year");
+                mapController.clearMarkers();
+                mapController.startReverse(getMostData("country", getRecentData()));
                 break;
         }
         LoadDataToView(this.view);
         toolbarSetTitle();
+
         return super.onOptionsItemSelected(item);
     }
 
