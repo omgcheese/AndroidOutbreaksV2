@@ -1,5 +1,6 @@
 package omgcheesecake.outbreak;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
@@ -37,7 +38,6 @@ import java.util.regex.Pattern;
 public class MapModel extends AppCompatActivity {
 
     private static TextView reportTitle;
-    //    private ApiModel apiModel;
     private SqlLiteModel sqlLiteModel;
     private FragmentManager fm;
     private SharedPref sharedPref;
@@ -62,12 +62,6 @@ public class MapModel extends AppCompatActivity {
         //Init report Title
         OutbreakInit();
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            Window w = getWindow(); // in Activity's onCreate() for instance
-//            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-//            w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-//        }
-
     }
 
     //Need to hide the report title until everything is loaded
@@ -80,7 +74,7 @@ public class MapModel extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 ReportModel reportModel = ReportModel.newInstance();
-                reportModel.setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Holo_Light_NoActionBar_TranslucentDecor);
+                reportModel.setStyle(DialogFragment.STYLE_NORMAL, R.style.fragmentTheme);
                 reportModel.show(fm, "outbreak_report");
                 return false;
             }

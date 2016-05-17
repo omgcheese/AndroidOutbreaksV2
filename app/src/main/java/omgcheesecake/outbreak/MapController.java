@@ -34,9 +34,9 @@ import java.util.Locale;
 
 public class MapController extends AppCompatActivity implements OnMapReadyCallback {
 
-    private GoogleMap googleMap;
+    private static GoogleMap googleMap;
     private Activity activity;
-    private GoogleDataListener googleDataListener;
+    private static GoogleDataListener googleDataListener;
 
 
     public MapController(Activity activity){
