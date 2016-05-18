@@ -83,7 +83,7 @@ public class MapController extends AppCompatActivity implements OnMapReadyCallba
             LatLng latLng = s.get(i).get(country);
             googleMap.addMarker(new MarkerOptions().position(latLng)
                     .title(country)
-                    .icon(BitmapDescriptorFactory.fromBitmap(icon)));
+                    .icon(BitmapDescriptorFactory.fromBitmap(icon)).alpha(0.75f));
             if(i == s.size()-1){
                 cameraZOOM(s.get(i).get(country));
             }

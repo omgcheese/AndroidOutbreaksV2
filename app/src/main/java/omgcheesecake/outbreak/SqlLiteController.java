@@ -114,8 +114,9 @@ public class SqlLiteController {
 
     }
 
-    public ArrayList<HashMap<String,String>> getVirusesfromCountry(String country){
+    public ArrayList<HashMap<String,String>> getVirusesfromCountry(String country, String date){
         //When you press a country, get all virus that the country experiences
+        dateBeforeConversion(date);
 
         c = sqLiteDatabase.rawQuery("SELECT * FROM virusregions WHERE country like '%"+ country + "%' AND lastupdated >= "+ this.convertedDate +" ORDER BY lastupdated DESC", null);
 
