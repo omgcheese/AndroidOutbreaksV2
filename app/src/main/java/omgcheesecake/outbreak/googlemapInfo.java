@@ -44,10 +44,11 @@ public class googlemapInfo implements GoogleMap.InfoWindowAdapter {
         this.country = country;
         this.sqlLiteModel = new SqlLiteModel(activity);
         sqlLiteModel.initiateController();
+        this.sharedPref = new SharedPref(activity);
     }
 
     public ArrayList<HashMap<String,String>> SearchingVirus(){
-        ArrayList<HashMap<String,String>> arrayList = sqlLiteModel.getVirusesfromCountry(this.country);
+        ArrayList<HashMap<String,String>> arrayList = sqlLiteModel.getVirusesfromCountry(this.country, sharedPref.getOption());
         ArrayList<HashMap<String,String>> result = CheckChar(arrayList);
         return result;
     }
@@ -70,6 +71,8 @@ public class googlemapInfo implements GoogleMap.InfoWindowAdapter {
     }
 
     public void addingInfo(HashMap<String, Integer> result){
+        TextView tvcountry = (TextView)this.myView.findViewById(R.id.TVCountry);
+        tvcountry.setText(this.country);
         TableLayout tableLayout = (TableLayout)this.myView.findViewById(R.id.googleInfoWindow);
 
         Iterator<String> v = result.keySet().iterator();
@@ -88,11 +91,11 @@ public class googlemapInfo implements GoogleMap.InfoWindowAdapter {
             tv1.setLayoutParams(new TableRow.LayoutParams(1));
             tv2.setLayoutParams(new TableRow.LayoutParams(2));
 
-            tv1.setMaxWidth(300);
+            tv1.setMaxWidth(400);
             tv2.setMaxWidth(100);
 
-            //17 is Center and 5 is right
-            tv1.setGravity(17);
+            //11 is Center and 5 is right
+            tv1.setGravity(7);
             tv2.setGravity(5);
 
             tr.addView(tv1);
@@ -184,7 +187,7 @@ public class googlemapInfo implements GoogleMap.InfoWindowAdapter {
                                 } else {
                                     hashMap.put("virusname", virusname);
                                 }
-                                hashMap.put("country", WordUtils.capitalize(countryname));
+                                hashMap.put("country", WordUtils.capitalize(newCountry[0]));
                                 hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
                                 sortedArrayList.add(hashMap);
                             }
@@ -199,10 +202,9 @@ public class googlemapInfo implements GoogleMap.InfoWindowAdapter {
                                     } else {
                                         hashMap.put("virusname", virusname);
                                     }
-                                    hashMap.put("country", WordUtils.capitalize(countryname));
+                                    hashMap.put("country", WordUtils.capitalize(newCountry[j]));
                                     hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
                                     sortedArrayList.add(hashMap);
-                                    break;
                                 }
                             }
                         }
@@ -220,7 +222,7 @@ public class googlemapInfo implements GoogleMap.InfoWindowAdapter {
                             } else {
                                 hashMap.put("virusname", virusname);
                             }
-                            hashMap.put("country", WordUtils.capitalize(countryname));
+                            hashMap.put("country", WordUtils.capitalize(newCountry[0]));
                             hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
                             sortedArrayList.add(hashMap);
                         }
@@ -235,10 +237,9 @@ public class googlemapInfo implements GoogleMap.InfoWindowAdapter {
                                 } else {
                                     hashMap.put("virusname", virusname);
                                 }
-                                hashMap.put("country", WordUtils.capitalize(countryname));
+                                hashMap.put("country", WordUtils.capitalize(newCountry[j]));
                                 hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
                                 sortedArrayList.add(hashMap);
-                                break;
                             }
                         }
                     }

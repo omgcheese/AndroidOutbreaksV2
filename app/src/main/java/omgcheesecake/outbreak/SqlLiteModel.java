@@ -35,8 +35,8 @@ public class SqlLiteModel{
         this.sqlLiteController.destroySQL(context);
     }
 
-    public ArrayList<HashMap<String, String>> getVirusesfromCountry(String country){
-        return this.sqlLiteController.getVirusesfromCountry(country);
+    public ArrayList<HashMap<String, String>> getVirusesfromCountry(String country, String date){
+        return this.sqlLiteController.getVirusesfromCountry(country, date);
     }
 
     public Boolean LastRowComparison(ArrayList<HashMap<String, String>> lastrow_1){
