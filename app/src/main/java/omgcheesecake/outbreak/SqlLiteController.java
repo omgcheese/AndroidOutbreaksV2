@@ -12,7 +12,7 @@ import java.util.Locale;
 public class SqlLiteController {
 
     private Context context;
-    private static SQLiteDatabase sqLiteDatabase;
+    private SQLiteDatabase sqLiteDatabase;
     private Cursor c;
     private int convertedDate = 0;
 
@@ -24,7 +24,7 @@ public class SqlLiteController {
     public void onCreate(){
         try{
             sqLiteDatabase = this.context.openOrCreateDatabase("virus_DB", Context.MODE_PRIVATE, null);
-            sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS virusregions (virusname VARCHAR, country VARCHAR, lastupdated INT(8))");
+            sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS virusregions(virusname VARCHAR, country VARCHAR, lastupdated INT(8))");
         }
         catch (Exception e){
             e.printStackTrace();
@@ -90,27 +90,27 @@ public class SqlLiteController {
         return result;
     }
 
-    //Arg1 is from sqlite database and arg2 is from the server
-    public Boolean lastrowsCompare(ArrayList<HashMap<String,String>> arg1, ArrayList<HashMap<String,String>> arg2){
-        String arg2DateString = YYYYMMDDtoString(Integer.parseInt(arg2.get(0).get("lastupdated")));
-        if(arg1.size() == 0){
-            return false;
-        }
-        if(arg1.get(0).get("virusname").equals(arg2.get(0).get("virusname"))
-                && arg1.get(0).get("country").equals(arg2.get(0).get("country"))
-                && arg1.get(0).get("lastupdated").equals(arg2DateString)) {
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
+//    //Arg1 is from sqlite database and arg2 is from the server
+//    public Boolean lastrowsCompare(ArrayList<HashMap<String,String>> arg1, ArrayList<HashMap<String,String>> arg2){
+//        String arg2DateString = YYYYMMDDtoString(Integer.parseInt(arg2.get(0).get("lastupdated")));
+//        if(arg1.size() == 0){
+//            return false;
+//        }
+//        if(arg1.get(0).get("virusname").equals(arg2.get(0).get("virusname"))
+//                && arg1.get(0).get("country").equals(arg2.get(0).get("country"))
+//                && arg1.get(0).get("lastupdated").equals(arg2DateString)) {
+//            return true;
+//        }
+//        else{
+//            return false;
+//        }
+//    }
 
     public ArrayList<HashMap<String,String>> countrywithVirus(String virusname){
         //When you press a virus in a row, get all countries that experiences with that virus
         //Needs to add time
-        c = sqLiteDatabase.rawQuery("SELECT * FROM virusregions WHERE virusname like '%"+ virusname + "%' AND lastupdated >= "+ this.convertedDate + " ORDER BY lastupdated DESC" , null);
-        return queryResult(c);
+        this.c = sqLiteDatabase.rawQuery("SELECT * FROM virusregions WHERE virusname like '%"+ virusname + "%' AND lastupdated >= "+ this.convertedDate + " ORDER BY lastupdated DESC" , null);
+        return queryResult();
 
     }
 
@@ -118,10 +118,10 @@ public class SqlLiteController {
         //When you press a country, get all virus that the country experiences
         dateBeforeConversion(date);
 
-        c = sqLiteDatabase.rawQuery("SELECT * FROM virusregions WHERE country like '%"+ country + "%' AND lastupdated >= "+ this.convertedDate +" ORDER BY lastupdated DESC", null);
+        this.c = sqLiteDatabase.rawQuery("SELECT * FROM virusregions WHERE country like '%"+ country + "%' AND lastupdated >= "+ this.convertedDate +" ORDER BY lastupdated DESC", null);
 
 
-        return queryResult(c);
+        return queryResult();
     }
 
 
@@ -131,23 +131,23 @@ public class SqlLiteController {
         if (limit == 0){
             //if limit is zero then requesters gets all the database
             //data intensive. try to avoid this
-            c = sqLiteDatabase.rawQuery("SELECT * FROM virusregions ORDER BY lastupdated DESC", null);
+            this.c = sqLiteDatabase.rawQuery("SELECT * FROM virusregions ORDER BY lastupdated DESC", null);
         }
         else {
             //set limit
-            c = sqLiteDatabase.rawQuery("SELECT * FROM virusregions ORDER BY lastupdated DESC LIMIT " + String.valueOf(limit) + " OFFSET " + String.valueOf(offset), null);
+            this.c = sqLiteDatabase.rawQuery("SELECT * FROM virusregions ORDER BY lastupdated DESC LIMIT " + String.valueOf(limit) + " OFFSET " + String.valueOf(offset), null);
         }
 
-        return queryResult(c);
+        return queryResult();
     }
 
     public ArrayList<HashMap<String, String>> virusByTime(String date){
 
         dateBeforeConversion(date);
 
-        c = sqLiteDatabase.rawQuery("SELECT * FROM virusregions WHERE lastupdated >= "+ this.convertedDate + " ORDER BY lastupdated DESC", null);
+        this.c = sqLiteDatabase.rawQuery("SELECT * FROM virusregions WHERE lastupdated >= "+ this.convertedDate + " ORDER BY lastupdated DESC", null);
 
-        return queryResult(c);
+        return queryResult();
 
     }
 
@@ -192,28 +192,28 @@ public class SqlLiteController {
         this.convertedDate = Integer.valueOf(result);
     }
 
-    public ArrayList<HashMap<String, String>> queryResult(Cursor c){
+    public ArrayList<HashMap<String, String>> queryResult(){
         ArrayList<HashMap<String, String>> result = new ArrayList<>();
 
         //defining columnIndex for each column
-        int virusnameIndex = c.getColumnIndex("virusname");
-        int countryIndex = c.getColumnIndex("country");
-        int lastupdateIndex = c.getColumnIndex("lastupdated");
+        int virusnameIndex = this.c.getColumnIndex("virusname");
+        int countryIndex = this.c.getColumnIndex("country");
+        int lastupdateIndex = this.c.getColumnIndex("lastupdated");
 
         //Cursor is now at the first row
-        c.moveToFirst();
+        this.c.moveToFirst();
 
         //loop until cursor lands at null(end of the row)
-        while (!c.isAfterLast()){
+        while (!this.c.isAfterLast()){
             HashMap<String, String> map = new HashMap<>();
-            map.put("virusname", c.getString(virusnameIndex));
-            map.put("lastupdated", YYYYMMDDtoString(c.getInt(lastupdateIndex)));
-            map.put("country", c.getString(countryIndex));
+            map.put("virusname", this.c.getString(virusnameIndex));
+            map.put("lastupdated", YYYYMMDDtoString(this.c.getInt(lastupdateIndex)));
+            map.put("country", this.c.getString(countryIndex));
             result.add(map);
-            c.moveToNext();
+            this.c.moveToNext();
         }
 
-        c.close();
+        this.c.close();
 
         return result;
     }
@@ -229,5 +229,9 @@ public class SqlLiteController {
             e.printStackTrace();
         }
 
+    }
+
+    public void closeCuror(){
+        this.c.close();
     }
 }

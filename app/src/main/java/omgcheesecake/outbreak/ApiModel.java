@@ -13,17 +13,19 @@ public class ApiModel{
     private ApiController apiController;
     private static ApiModelListener apiModelListener;
 
-    public ApiModel(){
+    public ApiModel(int version){
         if(this.apiController == null){
-            this.apiController = new ApiController();
+            this.apiController = new ApiController(version);
         }
         this.apiController.setApiCall(new ApiController.ApiListener() {
-            @Override
-            public void onLastRow(ArrayList<HashMap<String, String>> lastrow) {
-                if(apiModelListener != null){
-                    apiModelListener.apimodelonLastRow(lastrow);
-                }
-            }
+
+//            No longer Support onLastRow method anymore
+//            @Override
+//            public void onLastRow(ArrayList<HashMap<String, String>> lastrow) {
+//                if(apiModelListener != null){
+//                    apiModelListener.apimodelonLastRow(lastrow);
+//                }
+//            }
 
             @Override
             public void onDataLoaded(JSONObject jsonObject) {
@@ -31,27 +33,37 @@ public class ApiModel{
             }
 
             @Override
-            public void onComplete() {
-                apiModelListener.apimodelComplete();
+            public void onComplete(int currentVer) {
+                apiModelListener.apimodelComplete(currentVer);
+            }
+
+            @Override
+            public void versionCompare(boolean same, int difference, int currentVer) {
+                apiModelListener.apimodelVersion(same, difference, currentVer);
             }
         });
     }
 
-    public void GetLastRow(){
-        apiController.GetLastRow();
-    }
+//    No longer support Last Row functions
+//    public void GetLastRow(){
+//        apiController.GetLastRow();
+//    }
 
     public interface ApiModelListener{
-        void apimodelonLastRow(ArrayList<HashMap<String, String>> lastrow);
         void apimodelonDataLoaded(JSONObject jsonObject);
-        void apimodelComplete();
+        void apimodelComplete(int currentVer);
+        void apimodelVersion(boolean same, int difference, int currentVer);
     }
 
     public void setApimodelListener(ApiModelListener apiModelListener){
         this.apiModelListener = apiModelListener;
     }
 
-    public void downloadContent(){
-        this.apiController.downloadContent();
+    public void downloadContent(int difference, int currentVer){
+        this.apiController.downloadContent(difference, currentVer);
+    }
+
+    public void getVersion(){
+        apiController.getVersion();
     }
 }

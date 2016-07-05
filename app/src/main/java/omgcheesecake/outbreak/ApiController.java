@@ -1,5 +1,6 @@
 package omgcheesecake.outbreak;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -18,48 +19,58 @@ import java.util.HashMap;
 public class ApiController{
 
     private static ApiListener apiListener;
+    private int version;
 
-    ApiController(){
+    public ApiController(int version){
         this.apiListener = null;
+        this.version = version;
     }
 
-    public void GetLastRow(){
-        lastrow task = new lastrow();
-        task.execute("http://afternoon-garden-52459.herokuapp.com/api/get/lastrow");
+//    This function is no longer supported
+//    public void GetLastRow(){
+//        lastrow task = new lastrow();
+//        task.execute("http://afternoon-garden-52459.herokuapp.com/api/get/lastrow");
+//    }
+
+    public void getVersion(){
+        //If there is data version, send it via query string
+        GetVersion getVersion = new GetVersion();
+        getVersion.execute("http://afternoon-garden-52459.herokuapp.com/api/get/version?version="+this.version);
+
     }
 
     public void setApiCall(ApiListener apiListener){
         this.apiListener = apiListener;
     }
 
-    public void downloadContent(){
+    public void downloadContent(int diff, int currversion){
         //Do the downloadtask in here
-        DownloadTask task = new DownloadTask();
-        task.execute("http://afternoon-garden-52459.herokuapp.com/api/get/all");
+        DownloadTask task = new DownloadTask(currversion);
+        task.execute("http://afternoon-garden-52459.herokuapp.com/api/get/all?limit="+ diff);
     }
 
     public interface ApiListener{
-        void onLastRow(ArrayList<HashMap<String, String>> lastrow);
+        //void onLastRow(ArrayList<HashMap<String, String>> lastrow);
         void onDataLoaded(JSONObject jsonObject);
-        void onComplete();
+        void onComplete(int currentVer);
+        void versionCompare(boolean same, int difference, int currentVer);
     }
 
-    public class lastrow extends AsyncTask<String, Void, String> {
-
+    public class GetVersion extends AsyncTask<String, Void, String>{
         @Override
         protected String doInBackground(String... urls) {
             String result = "";
             URL url;
-            HttpURLConnection urlConnection = null;
+            HttpURLConnection httpURLConnection = null;
 
             try {
                 url = new URL(urls[0]);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                InputStream in = urlConnection.getInputStream();
+                httpURLConnection = (HttpURLConnection) url.openConnection();
+                InputStream in = httpURLConnection.getInputStream();
                 InputStreamReader reader = new InputStreamReader(in);
 
                 int data = reader.read();
-                while (data > -1) {
+                while(data > -1){
                     char current = (char) data;
                     result += current;
                     data = reader.read();
@@ -67,9 +78,10 @@ public class ApiController{
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-            } catch (IOException e) {
+            } catch (IOException e){
                 e.printStackTrace();
             }
+
             return result;
         }
 
@@ -77,30 +89,46 @@ public class ApiController{
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
+            int difference = 0;
+            int currentVer = 0;
+            boolean same = false;
             try {
                 JSONObject jsonObject = new JSONObject(result);
-
-                String virusdata = jsonObject.getString("list");
-
-                JSONArray data = new JSONArray(virusdata);
-                ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-                HashMap<String, String> hashMap = new HashMap<>();
-                for (int i = 0; i< data.length(); i++){
-                    JSONObject jsonpart = data.getJSONObject(i);
-                    hashMap.put("virusname", jsonpart.getString("virusname"));
-                    hashMap.put("country", jsonpart.getString("country"));
-                    hashMap.put("lastupdated", jsonpart.getString("lastupdated"));
-                    arrayList.add(hashMap);
+                //if you get correct result, you will get a format like this:
+                /*
+                {
+                    date: moment().format("YYYYMMDD"),
+                    succuess: true,
+                    same: false,
+                    diff: sumofDiff <- Integer
                 }
-                apiListener.onLastRow(arrayList);
+                */
+                if(jsonObject.getBoolean("same")){
+                    same = true;
+                }
+                else{
+                    same = false;
+                    difference = jsonObject.getInt("diff");
+                    currentVer = jsonObject.getInt("currentVersion");
+                }
+
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            apiListener.versionCompare(same, difference, currentVer);
+
         }
     }
 
     public class DownloadTask extends AsyncTask<String, Void, String>{
+        private int currentVer;
+
+        public DownloadTask(int currentVer){
+            this.currentVer = currentVer;
+        }
 
         @Override
         protected String doInBackground(String... urls) {
@@ -149,7 +177,7 @@ public class ApiController{
                     apiListener.onDataLoaded(jsonpart);
                 }
 
-                apiListener.onComplete();
+                apiListener.onComplete(this.currentVer);
 
 
 
