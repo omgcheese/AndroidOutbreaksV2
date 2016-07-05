@@ -109,7 +109,7 @@ public class MapModel extends AppCompatActivity {
     }
 
     public void mapControllerReverse() {
-        this.mapController.startReverse(getMostData("country", getRecentData()));
+        this.mapController.startReverse(getMostData("country", getRecentData()), true);
     }
 
     @Override
