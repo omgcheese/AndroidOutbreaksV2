@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class SqlLiteModel{
 
-    private SqlLiteController sqlLiteController;
+    private static SqlLiteController sqlLiteController;
     private Context context;
     private static HashMap<String, String> LastRow;
 
@@ -37,21 +37,6 @@ public class SqlLiteModel{
 
     public ArrayList<HashMap<String, String>> getVirusesfromCountry(String country, String date){
         return this.sqlLiteController.getVirusesfromCountry(country, date);
-    }
-
-    public Boolean LastRowComparison(ArrayList<HashMap<String, String>> lastrow_1){
-
-        ArrayList<HashMap<String, String>> lastrow_2 = sqlLiteController.retrieveRegionDatabaseLastRow(1, 0);
-        if(LastRow == null && lastrow_2.size() > 0){
-            LastRow = lastrow_2.get(0);
-        }
-        Boolean comparison = sqlLiteController.lastrowsCompare(lastrow_2, lastrow_1);
-        if (!comparison) {
-            //if they are not same, start downloading full content from the server
-            return true;
-        }
-        //if the last row is same, DO NOT download
-        return false;
     }
 
     public void LoadingData(JSONObject jsonObject){
@@ -82,4 +67,24 @@ public class SqlLiteModel{
             e.printStackTrace();
         }
     }
+
+    public void closeCursor(){
+        this.sqlLiteController.closeCuror();
+    }
+
+//    No longer Supoorted
+//    public Boolean LastRowComparison(ArrayList<HashMap<String, String>> lastrow_1){
+//
+//        ArrayList<HashMap<String, String>> lastrow_2 = sqlLiteController.retrieveRegionDatabaseLastRow(1, 0);
+//        if(LastRow == null && lastrow_2.size() > 0){
+//            LastRow = lastrow_2.get(0);
+//        }
+//        Boolean comparison = sqlLiteController.lastrowsCompare(lastrow_2, lastrow_1);
+//        if (!comparison) {
+//            //if they are not same, start downloading full content from the server
+//            return true;
+//        }
+//        //if the last row is same, DO NOT download
+//        return false;
+//    }
 }
