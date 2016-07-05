@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,6 +26,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -84,6 +86,8 @@ public class ReportModel extends DialogFragment {
         LoadDataToView(view);
 
 //        PieChart(view);
+
+        ItemClicked();
 
         mapController = new MapController(getActivity());
 
@@ -146,6 +150,27 @@ public class ReportModel extends DialogFragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
+    public void ItemClicked(){
+        int selectedINT = radioGroup.getCheckedRadioButtonId();
+        final RadioButton radioButton = (RadioButton)view.findViewById(selectedINT);
+        recycleList.setClickListener(new RecycleList.ClickListener() {
+            @Override
+            public void itemViewClicked(View v) {
+                if(radioButton.getText().equals("Recent") || radioButton.getText().equals("Region")){
+                    TextView country = (TextView)v.findViewById(R.id.countryText);
+                    ArrayList<HashMap<String, Integer>> arrayList = new ArrayList<>();
+                    HashMap<String, Integer> hashMap = new HashMap<>();
+                    hashMap.put((String)country.getText(), 0);
+                    arrayList.add(hashMap);
+                    mapController.startReverse(arrayList, false);
+
+                    //Once we initate Reverse Geocoding, we can close the Fragment
+                    dialog.dismiss();
+                }
+            }
+        });
+    }
+
 
     public ArrayList<HashMap<String, String>> getRecentData() {
         //SQLite is already initialized
@@ -156,16 +181,6 @@ public class ReportModel extends DialogFragment {
 
 
     public ArrayList<HashMap<String, Integer>> getMostData(String s, ArrayList<HashMap<String, String>> inputList){
-//        //Count how many incident occurred by date
-//
-//        //INit Sqllite
-//        if(sqlLiteModel == null){
-//            sqlLiteModel = new SqlLiteModel(getActivity());
-//        }
-//        //init sharedpref
-//        if(sharedPref == null){
-//            sharedPref = new SharedPref(getActivity());
-//        }
 
         ArrayList<HashMap<String, Integer>> sortedArrayList = new ArrayList<>();
 
@@ -247,31 +262,31 @@ public class ReportModel extends DialogFragment {
             case (R.id.action_1week):
                 sharedPref.setOption("1 Week");
                 mapController.clearMarkers();
-                mapController.startReverse(getMostData("country", getRecentData()));
+                mapController.startReverse(getMostData("country", getRecentData()), true);
                 break;
 
             case (R.id.action_1month):
                 sharedPref.setOption("1 Month");
                 mapController.clearMarkers();
-                mapController.startReverse(getMostData("country", getRecentData()));
+                mapController.startReverse(getMostData("country", getRecentData()), true);
                 break;
 
             case (R.id.action_3month):
                 sharedPref.setOption("3 Month");
                 mapController.clearMarkers();
-                mapController.startReverse(getMostData("country", getRecentData()));
+                mapController.startReverse(getMostData("country", getRecentData()), true);
                 break;
 
             case (R.id.action_6month):
                 sharedPref.setOption("6 Month");
                 mapController.clearMarkers();
-                mapController.startReverse(getMostData("country", getRecentData()));
+                mapController.startReverse(getMostData("country", getRecentData()), true);
                 break;
 
             case (R.id.action_1year):
                 sharedPref.setOption("1 Year");
                 mapController.clearMarkers();
-                mapController.startReverse(getMostData("country", getRecentData()));
+                mapController.startReverse(getMostData("country", getRecentData()), true);
                 break;
         }
         LoadDataToView(this.view);
