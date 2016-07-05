@@ -1,7 +1,9 @@
 package omgcheesecake.outbreak;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,11 @@ public class RecycleList extends RecyclerView.Adapter<RecycleList.ViewHolder>{
     private ArrayList<HashMap<String, String>> arrayListRecent;
     private ArrayList<HashMap<String, Integer>> arrayListOther;
     private static String tabString;
+    private static ClickListener clickListener;
+
+    public interface ClickListener{
+        void itemViewClicked(View v);
+    }
 
     public RecycleList(ArrayList<HashMap<String, String>> arrayList){
         this.arrayListRecent = arrayList;
@@ -24,6 +31,10 @@ public class RecycleList extends RecyclerView.Adapter<RecycleList.ViewHolder>{
     public RecycleList(ArrayList<HashMap<String, Integer>> arrayList, String s){
         this.arrayListOther = arrayList;
         this.tabString = s;
+    }
+
+    public void setClickListener(ClickListener clickListener){
+        this.clickListener = clickListener;
     }
 
     //inflating layout from XML and returning the holder
@@ -103,7 +114,7 @@ public class RecycleList extends RecyclerView.Adapter<RecycleList.ViewHolder>{
         }
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView virusname;
         public TextView country;
@@ -115,6 +126,7 @@ public class RecycleList extends RecyclerView.Adapter<RecycleList.ViewHolder>{
             super(itemView);
 
             view = itemView.findViewById(R.id.breakLine);
+            itemView.setOnClickListener(this);
 
             if(tabString.equals("Recent")){
                 virusname = (TextView)itemView.findViewById(R.id.virusText);
@@ -128,6 +140,14 @@ public class RecycleList extends RecyclerView.Adapter<RecycleList.ViewHolder>{
             else {
                 country = (TextView)itemView.findViewById(R.id.countryText);
                 totalCount = (TextView)itemView.findViewById(R.id.totalCountText);
+            }
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            if(tabString.equals("Recent") || tabString.equals("Region")){
+                clickListener.itemViewClicked(v);
             }
 
         }

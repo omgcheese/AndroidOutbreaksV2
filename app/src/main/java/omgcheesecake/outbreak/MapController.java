@@ -109,16 +109,18 @@ public class MapController extends AppCompatActivity implements OnMapReadyCallba
         this.googleDataListener = googleDataListener;
     }
 
-    public void startReverse(ArrayList<HashMap<String, Integer>> arrayList){
-        ReverseGeoCoding RG = new ReverseGeoCoding(activity);
+    public void startReverse(ArrayList<HashMap<String, Integer>> arrayList, boolean mapmarker){
+        ReverseGeoCoding RG = new ReverseGeoCoding(activity, mapmarker);
         RG.execute(arrayList);
     }
 
     protected class ReverseGeoCoding extends AsyncTask<ArrayList<HashMap<String, Integer>>, Void, ArrayList<HashMap<String, LatLng>>> {
         private Context context;
+        private boolean mapMarker;
 
-        public ReverseGeoCoding(Context context){
+        public ReverseGeoCoding(Context context, boolean mapMarker){
             this.context = context;
+            this.mapMarker = mapMarker;
         }
 
         @Override
@@ -157,7 +159,15 @@ public class MapController extends AppCompatActivity implements OnMapReadyCallba
         protected void onPostExecute(ArrayList<HashMap<String, LatLng>> arrayListLatLng) {
             super.onPostExecute(arrayListLatLng);
             if(arrayListLatLng != null && arrayListLatLng.size() > 0){
-                placeMarker(arrayListLatLng);
+                if(this.mapMarker){
+                    placeMarker(arrayListLatLng);
+                }
+                else{
+                    //The only time when mapMarker is false is when we want to camera zoom it.
+                    //Make sure to push only one array
+                    cameraZOOM(arrayListLatLng.get(0).values().iterator().next());
+                }
+
             }
         }
     }
