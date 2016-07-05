@@ -23,8 +23,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.apache.commons.lang3.text.WordUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,7 +71,7 @@ public class MapModel extends AppCompatActivity {
         reportTitle.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                ReportModel reportModel = ReportModel.newInstance();
+                ReportModel reportModel = ReportModel.newInstance(sqlLiteModel);
                 reportModel.setStyle(DialogFragment.STYLE_NORMAL, R.style.fragmentTheme);
                 reportModel.show(fm, "outbreak_report");
                 return false;
@@ -117,7 +115,13 @@ public class MapModel extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        sqlLiteModel.SQLDestroy();
+        sqlLiteModel.closeCursor();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sqlLiteModel.closeCursor();
     }
 
     public void Buttonanimated() {
@@ -126,119 +130,9 @@ public class MapModel extends AppCompatActivity {
 
 
     public ArrayList<HashMap<String, String>> getRecentData() {
-        //Define sorting func
         ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
         arrayList = sqlLiteModel.virusByTime(sharedPref.getOption());
-        ArrayList<HashMap<String, String>> sortedArrayList = new ArrayList<>();
-
-        //Since sqlitemodel is sorted by time, just need to parse "And" change virus name to capital
-
-        for (int i = 0; i < arrayList.size(); i++) {
-            String virusname = arrayList.get(i).get("virusname").toLowerCase().trim();
-            String countryname = arrayList.get(i).get("country").toLowerCase().trim();
-            String lastupdated = arrayList.get(i).get("lastupdated");
-
-            //Check if there is bracket word in Virus section and capitalize all letters
-            Pattern pattern = Pattern.compile("\\(([^)]+)\\)");
-            Matcher matcher = pattern.matcher(virusname);
-
-            while (matcher.find()) {
-                if (matcher.group().length() != 0) {
-                    String s = matcher.group().trim().substring(1, matcher.group().trim().length() - 1).toUpperCase();
-                    virusname = s;
-                }
-            }
-
-            //Checks if string has AND or ,
-            if(countryname.equals("saint vincent and the grenadines")){
-                HashMap<String, String> hashMap = new HashMap<>();
-                if (!Character.isUpperCase(virusname.charAt(0))) {
-                    hashMap.put("virusname", WordUtils.capitalize(virusname));
-                } else {
-                    hashMap.put("virusname", virusname);
-                }
-                hashMap.put("country", WordUtils.capitalize(countryname));
-                hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-                sortedArrayList.add(hashMap);
-            }
-            else if(countryname.equals("trinidad and tobago")){
-                HashMap<String, String> hashMap = new HashMap<>();
-                if (!Character.isUpperCase(virusname.charAt(0))) {
-                    hashMap.put("virusname", WordUtils.capitalize(virusname));
-                } else {
-                    hashMap.put("virusname", virusname);
-                }
-                hashMap.put("country", WordUtils.capitalize(countryname));
-                hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-                sortedArrayList.add(hashMap);
-            }
-            else{
-
-                String dashSplit[] = countryname.split(" - ");
-                if(dashSplit.length > 1){
-                    String newCountry[] = dashSplit[1].split(" and |, ");
-                    if(newCountry.length == 1){
-                        HashMap<String, String> hashMap = new HashMap<>();
-
-                        if (!Character.isUpperCase(virusname.charAt(0))) {
-                            hashMap.put("virusname", WordUtils.capitalize(virusname));
-                        } else {
-                            hashMap.put("virusname", virusname);
-                        }
-                        hashMap.put("country", WordUtils.capitalize(newCountry[0]));
-                        hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-                        sortedArrayList.add(hashMap);
-                    }
-                    else {
-                        for(int j = 0; j < newCountry.length; j++){
-                            HashMap<String, String> hashMap = new HashMap<>();
-
-                            if (!Character.isUpperCase(virusname.charAt(0))) {
-                                hashMap.put("virusname", WordUtils.capitalize(virusname));
-                            } else {
-                                hashMap.put("virusname", virusname);
-                            }
-                            hashMap.put("country", WordUtils.capitalize(newCountry[j]));
-                            hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-                            sortedArrayList.add(hashMap);
-                        }
-                    }
-                }
-                else{
-                    //if there is no dash, code arrives here
-                    //check if it has comma or and
-                    String newCountry[] = dashSplit[0].split(" and |, ");
-                    if(newCountry.length == 1){
-                        HashMap<String, String> hashMap = new HashMap<>();
-
-                        if (!Character.isUpperCase(virusname.charAt(0))) {
-                            hashMap.put("virusname", WordUtils.capitalize(virusname));
-                        } else {
-                            hashMap.put("virusname", virusname);
-                        }
-                        hashMap.put("country", WordUtils.capitalize(newCountry[0]));
-                        hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-                        sortedArrayList.add(hashMap);
-                    }
-                    else {
-                        for(int j = 0; j < newCountry.length; j++){
-                            HashMap<String, String> hashMap = new HashMap<>();
-
-                            if (!Character.isUpperCase(virusname.charAt(0))) {
-                                hashMap.put("virusname", WordUtils.capitalize(virusname));
-                            } else {
-                                hashMap.put("virusname", virusname);
-                            }
-                            hashMap.put("country", WordUtils.capitalize(newCountry[j]));
-                            hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-                            sortedArrayList.add(hashMap);
-                        }
-                    }
-                }
-
-            }
-        }
-        return sortedArrayList;
+        return arrayList;
     }
 
     public ArrayList<HashMap<String, Integer>> getMostData(String s, ArrayList<HashMap<String, String>> inputList){
@@ -251,14 +145,14 @@ public class MapModel extends AppCompatActivity {
 
             if(sortedArrayList.size() == 0){
                 HashMap<String, Integer> hashMap = new HashMap<>();
-                hashMap.put(WordUtils.capitalize(virusname), 1);
+                hashMap.put(virusname, 1);
                 sortedArrayList.add(hashMap);
             }
             else{
                 int size = new Integer(sortedArrayList.size());
                 for(int j = 0; j < size; j++){
                     if(sortedArrayList.get(j).containsKey(virusname) || sortedArrayList.get(j).equals(virusname)){
-                        sortedArrayList.get(j).put(WordUtils.capitalize(virusname), sortedArrayList.get(j).get(virusname)+1);
+                        sortedArrayList.get(j).put(virusname, sortedArrayList.get(j).get(virusname)+1);
                         break;
                     }
                     if(j == size-1 && !sortedArrayList.get(j).containsKey(virusname)){
