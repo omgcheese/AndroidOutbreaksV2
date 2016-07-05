@@ -153,150 +153,7 @@ public class ReportModel extends DialogFragment {
     }
 
 
-//        //INit Sqllite
-//        if(sqlLiteModel == null){
-//            sqlLiteModel = new SqlLiteModel(getActivity());
-//        }
-//        //init sharedpref
-//        if(sharedPref == null){
-//            sharedPref = new SharedPref(getActivity());
-//        }
-//
-//        //Define sorting func
-//        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-//        arrayList = sqlLiteModel.virusByTime(sharedPref.getOption());
-//        ArrayList<HashMap<String, String>> sortedArrayList = new ArrayList<>();
-//
-//        //Since sqlitemodel is sorted by time, just need to parse "And" change virus name to capital
-//
-//        for(int i = 0; i < arrayList.size(); i++){
-//            String virusname = arrayList.get(i).get("virusname").toLowerCase().trim();
-//            String countryname = arrayList.get(i).get("country").toLowerCase().trim();
-//            String lastupdated = arrayList.get(i).get("lastupdated");
-//
-//            //Check if there is bracket word in Virus section and capitalize all letters
-//            Pattern pattern = Pattern.compile("\\(([^)]+)\\)");
-//            Matcher matcher = pattern.matcher(virusname);
-//
-//            while(matcher.find()){
-//                if(matcher.group().length() != 0){
-//                    String s = matcher.group().trim().substring(1, matcher.group().trim().length()-1).toUpperCase();
-//                    virusname = s;
-//                }
-//            }
-//
-//            //Checks if string has AND or ,
-//            if(countryname.equals("saint vincent and the grenadines")){
-//                HashMap<String, String> hashMap = new HashMap<>();
-//                if (!Character.isUpperCase(virusname.charAt(0))) {
-//                    hashMap.put("virusname", WordUtils.capitalize(virusname));
-//                } else {
-//                    hashMap.put("virusname", virusname);
-//                }
-//                hashMap.put("country", WordUtils.capitalize(countryname));
-//                hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-//                sortedArrayList.add(hashMap);
-//            }
-//            else if(countryname.equals("trinidad and tobago")){
-//                HashMap<String, String> hashMap = new HashMap<>();
-//                if (!Character.isUpperCase(virusname.charAt(0))) {
-//                    hashMap.put("virusname", WordUtils.capitalize(virusname));
-//                } else {
-//                    hashMap.put("virusname", virusname);
-//                }
-//                hashMap.put("country", WordUtils.capitalize(countryname));
-//                hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-//                sortedArrayList.add(hashMap);
-//            }
-//            else{
-//
-//                String dashSplit[] = countryname.split(" - ");
-//                if(dashSplit.length > 1){
-//                    String newCountry[] = dashSplit[1].split(" and |, ");
-//                    if(newCountry.length == 1){
-//                        HashMap<String, String> hashMap = new HashMap<>();
-//
-//                        if (!Character.isUpperCase(virusname.charAt(0))) {
-//                            hashMap.put("virusname", WordUtils.capitalize(virusname));
-//                        } else {
-//                            hashMap.put("virusname", virusname);
-//                        }
-//                        hashMap.put("country", WordUtils.capitalize(newCountry[0]));
-//                        hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-//                        sortedArrayList.add(hashMap);
-//                    }
-//                    else {
-//                        for(int j = 0; j < newCountry.length; j++){
-//                            HashMap<String, String> hashMap = new HashMap<>();
-//
-//                            if (!Character.isUpperCase(virusname.charAt(0))) {
-//                                hashMap.put("virusname", WordUtils.capitalize(virusname));
-//                            } else {
-//                                hashMap.put("virusname", virusname);
-//                            }
-//                            hashMap.put("country", WordUtils.capitalize(newCountry[j]));
-//                            hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-//                            sortedArrayList.add(hashMap);
-//                        }
-//                    }
-//                }
-//                else{
-//                    //if there is no dash, code arrives here
-//                    //check if it has comma or and
-//                    String newCountry[] = dashSplit[0].split(" and |, ");
-//                    if(newCountry.length == 1){
-//                        HashMap<String, String> hashMap = new HashMap<>();
-//
-//                        if (!Character.isUpperCase(virusname.charAt(0))) {
-//                            hashMap.put("virusname", WordUtils.capitalize(virusname));
-//                        } else {
-//                            hashMap.put("virusname", virusname);
-//                        }
-//                        hashMap.put("country", WordUtils.capitalize(newCountry[0]));
-//                        hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-//                        sortedArrayList.add(hashMap);
-//                    }
-//                    else {
-//                        for(int j = 0; j < newCountry.length; j++){
-//                            HashMap<String, String> hashMap = new HashMap<>();
-//
-//                            if (!Character.isUpperCase(virusname.charAt(0))) {
-//                                hashMap.put("virusname", WordUtils.capitalize(virusname));
-//                            } else {
-//                                hashMap.put("virusname", virusname);
-//                            }
-//                            hashMap.put("country", WordUtils.capitalize(newCountry[j]));
-//                            hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-//                            sortedArrayList.add(hashMap);
-//                        }
-//                    }
-//                }
 
-
-
-
-
-
-//                String newCountry[] = countryname.split(" - | and |, ");
-//                for (int j = 0; j < newCountry.length; j++) {
-//                    HashMap<String, String> hashMap = new HashMap<>();
-//                    if (!Character.isUpperCase(virusname.charAt(0))) {
-//                        hashMap.put("virusname", WordUtils.capitalize(virusname));
-//                    } else {
-//                        hashMap.put("virusname", virusname);
-//                    }
-//                    hashMap.put("country", WordUtils.capitalize(newCountry[j]));
-//                    hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
-//                    sortedArrayList.add(hashMap);
-//                }
-
-
-//
-//
-//
-//        }
-//        return sortedArrayList;
-//    }
 
     public ArrayList<HashMap<String, Integer>> getMostData(String s, ArrayList<HashMap<String, String>> inputList){
 //        //Count how many incident occurred by date
@@ -626,6 +483,150 @@ public class ReportModel extends DialogFragment {
 //
 //        //refresh the data
 //        pieChart.invalidate();
+//    }
+    //        //INit Sqllite
+//        if(sqlLiteModel == null){
+//            sqlLiteModel = new SqlLiteModel(getActivity());
+//        }
+//        //init sharedpref
+//        if(sharedPref == null){
+//            sharedPref = new SharedPref(getActivity());
+//        }
+//
+//        //Define sorting func
+//        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+//        arrayList = sqlLiteModel.virusByTime(sharedPref.getOption());
+//        ArrayList<HashMap<String, String>> sortedArrayList = new ArrayList<>();
+//
+//        //Since sqlitemodel is sorted by time, just need to parse "And" change virus name to capital
+//
+//        for(int i = 0; i < arrayList.size(); i++){
+//            String virusname = arrayList.get(i).get("virusname").toLowerCase().trim();
+//            String countryname = arrayList.get(i).get("country").toLowerCase().trim();
+//            String lastupdated = arrayList.get(i).get("lastupdated");
+//
+//            //Check if there is bracket word in Virus section and capitalize all letters
+//            Pattern pattern = Pattern.compile("\\(([^)]+)\\)");
+//            Matcher matcher = pattern.matcher(virusname);
+//
+//            while(matcher.find()){
+//                if(matcher.group().length() != 0){
+//                    String s = matcher.group().trim().substring(1, matcher.group().trim().length()-1).toUpperCase();
+//                    virusname = s;
+//                }
+//            }
+//
+//            //Checks if string has AND or ,
+//            if(countryname.equals("saint vincent and the grenadines")){
+//                HashMap<String, String> hashMap = new HashMap<>();
+//                if (!Character.isUpperCase(virusname.charAt(0))) {
+//                    hashMap.put("virusname", WordUtils.capitalize(virusname));
+//                } else {
+//                    hashMap.put("virusname", virusname);
+//                }
+//                hashMap.put("country", WordUtils.capitalize(countryname));
+//                hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+//                sortedArrayList.add(hashMap);
+//            }
+//            else if(countryname.equals("trinidad and tobago")){
+//                HashMap<String, String> hashMap = new HashMap<>();
+//                if (!Character.isUpperCase(virusname.charAt(0))) {
+//                    hashMap.put("virusname", WordUtils.capitalize(virusname));
+//                } else {
+//                    hashMap.put("virusname", virusname);
+//                }
+//                hashMap.put("country", WordUtils.capitalize(countryname));
+//                hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+//                sortedArrayList.add(hashMap);
+//            }
+//            else{
+//
+//                String dashSplit[] = countryname.split(" - ");
+//                if(dashSplit.length > 1){
+//                    String newCountry[] = dashSplit[1].split(" and |, ");
+//                    if(newCountry.length == 1){
+//                        HashMap<String, String> hashMap = new HashMap<>();
+//
+//                        if (!Character.isUpperCase(virusname.charAt(0))) {
+//                            hashMap.put("virusname", WordUtils.capitalize(virusname));
+//                        } else {
+//                            hashMap.put("virusname", virusname);
+//                        }
+//                        hashMap.put("country", WordUtils.capitalize(newCountry[0]));
+//                        hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+//                        sortedArrayList.add(hashMap);
+//                    }
+//                    else {
+//                        for(int j = 0; j < newCountry.length; j++){
+//                            HashMap<String, String> hashMap = new HashMap<>();
+//
+//                            if (!Character.isUpperCase(virusname.charAt(0))) {
+//                                hashMap.put("virusname", WordUtils.capitalize(virusname));
+//                            } else {
+//                                hashMap.put("virusname", virusname);
+//                            }
+//                            hashMap.put("country", WordUtils.capitalize(newCountry[j]));
+//                            hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+//                            sortedArrayList.add(hashMap);
+//                        }
+//                    }
+//                }
+//                else{
+//                    //if there is no dash, code arrives here
+//                    //check if it has comma or and
+//                    String newCountry[] = dashSplit[0].split(" and |, ");
+//                    if(newCountry.length == 1){
+//                        HashMap<String, String> hashMap = new HashMap<>();
+//
+//                        if (!Character.isUpperCase(virusname.charAt(0))) {
+//                            hashMap.put("virusname", WordUtils.capitalize(virusname));
+//                        } else {
+//                            hashMap.put("virusname", virusname);
+//                        }
+//                        hashMap.put("country", WordUtils.capitalize(newCountry[0]));
+//                        hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+//                        sortedArrayList.add(hashMap);
+//                    }
+//                    else {
+//                        for(int j = 0; j < newCountry.length; j++){
+//                            HashMap<String, String> hashMap = new HashMap<>();
+//
+//                            if (!Character.isUpperCase(virusname.charAt(0))) {
+//                                hashMap.put("virusname", WordUtils.capitalize(virusname));
+//                            } else {
+//                                hashMap.put("virusname", virusname);
+//                            }
+//                            hashMap.put("country", WordUtils.capitalize(newCountry[j]));
+//                            hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+//                            sortedArrayList.add(hashMap);
+//                        }
+//                    }
+//                }
+
+
+
+
+
+
+//                String newCountry[] = countryname.split(" - | and |, ");
+//                for (int j = 0; j < newCountry.length; j++) {
+//                    HashMap<String, String> hashMap = new HashMap<>();
+//                    if (!Character.isUpperCase(virusname.charAt(0))) {
+//                        hashMap.put("virusname", WordUtils.capitalize(virusname));
+//                    } else {
+//                        hashMap.put("virusname", virusname);
+//                    }
+//                    hashMap.put("country", WordUtils.capitalize(newCountry[j]));
+//                    hashMap.put("lastupdated", WordUtils.capitalize(lastupdated));
+//                    sortedArrayList.add(hashMap);
+//                }
+
+
+//
+//
+//
+//        }
+//        return sortedArrayList;
 //    }
 
 }

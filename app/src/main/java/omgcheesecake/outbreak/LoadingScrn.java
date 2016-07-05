@@ -30,8 +30,8 @@ public class LoadingScrn extends AppCompatActivity {
         int versionNum = version.getVersion();
         if(versionNum == 0){
             //if versionNum is zero, delete SQLDatabase because you will be downloading everything
-            sqlLiteModel.SQLDestroy();
-            sqlLiteModel.initiateController();
+            //sqlLiteModel.SQLDestroy();
+            //sqlLiteModel.initiateController();
         }
         apiModel = new ApiModel(version.getVersion());
         apiModel.setApimodelListener(new ApiModel.ApiModelListener() {
